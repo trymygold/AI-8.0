@@ -28,11 +28,25 @@
       <div class="brand-row">
         <div class="brand-left"><img src="logo.png" alt="Jewels-ai Logo" class="brand-logo" /></div>
         <div class="action-row">
-          <button id="stacking-btn" onclick="toggleStacking()" title="Mix & Match">∞</button>
-          <button id="daily-btn" onclick="openDailyDrop()" title="Daily Drop">✨</button>
-          <button id="coshop-btn" onclick="toggleCoShop()" title="Co-Shopping Mode">👥</button>
-          <button id="voice-btn" onclick="toggleVoiceControl()" title="Voice Control">🎙️</button>
-          <button id="snapshot-btn" onclick="takeSnapshot()" title="Take Photo">📷</button>
+          <button id="stacking-btn" onclick="toggleStacking()" title="Mix & Match">
+            <img src="MM.png" alt="Mix Mode" class="icon-img">
+          </button>
+          
+          <button id="daily-btn" onclick="openDailyDrop()" title="Daily Drop">
+            <img src="DD.png" alt="Daily Drop" class="icon-img">
+          </button>
+          
+          <button id="coshop-btn" onclick="toggleCoShop()" title="Co-Shopping Mode">
+            <img src="COS.png" alt="Co-Shop" class="icon-img">
+          </button>
+          
+          <button id="voice-btn" onclick="toggleVoiceControl()" title="Voice Control">
+            <img src="VC.png" alt="Voice Control" class="icon-img">
+          </button>
+          
+          <button id="snapshot-btn" onclick="takeSnapshot()" title="Take Photo">
+            <img src="TP.png" alt="Camera" class="icon-img">
+          </button>
         </div>
       </div>
 
@@ -84,6 +98,13 @@
           <button class="pill accent" onclick="downloadAllAsZip()">Download ZIP</button>
         </div>
       </div>
+    </div>
+
+    <div id="lightbox-overlay">
+        <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
+        <div class="lightbox-nav prev" onclick="changeLightboxImage(-1)">&#10094;</div>
+        <div class="lightbox-nav next" onclick="changeLightboxImage(1)">&#10095;</div>
+        <div class="lightbox-main"><img id="lightbox-image" src="" alt="Zoomed View"></div>
     </div>
 
     <div id="coshop-modal" class="modal-overlay">
