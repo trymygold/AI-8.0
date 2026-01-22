@@ -1,4 +1,4 @@
-/* style.css - Jewels-Ai: Unified Master Version (v11.8 - Robust Close Buttons) */
+/* style.css - Jewels-Ai: Unified Master Version (v11.9 - Gold Header Icons) */
 
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap');
@@ -99,7 +99,7 @@ body.hosting #webcam { opacity: 0; }
     font-family: 'Playfair Display'; font-size: 18px; z-index: 500; backdrop-filter: blur(5px);
 }
 
-/* --- 4. TOP CONTROLS --- */
+/* --- 4. TOP CONTROLS (Updated Uniform Gold Icons) --- */
 #controls-hero {
   position: fixed; top: 0; left: 0; right: 0; padding: 20px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
@@ -110,26 +110,49 @@ body.hosting #webcam { opacity: 0; }
 .brand-logo { height: 40px; }
 .action-row { display: flex; gap: 15px; align-items: center; }
 
+/* UNIFORM CIRCLE STYLES FOR TOP ICONS */
 #snapshot-btn, #coshop-btn, #stacking-btn, #daily-btn, #voice-btn {
-  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
-  padding: 0; border-radius: 50%; cursor: pointer; 
-  color: white; font-size: 20px; transition: all 0.2s;
-  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, 0.6); /* Dark background matching bottom */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+  padding: 0; 
+  border-radius: 50%; /* Perfect Circle */
+  cursor: pointer; 
+  color: var(--accent); /* GOLD ICON COLOR */
+  font-size: 22px; 
+  transition: all 0.2s ease;
+  width: 48px;  /* Fixed Width */
+  height: 48px; /* Fixed Height */
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
   backdrop-filter: blur(4px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
-#stacking-btn.active {
-    background: var(--accent); color: #000; border-color: var(--accent);
+/* Hover Effect */
+#snapshot-btn:hover, #coshop-btn:hover, #stacking-btn:hover, #daily-btn:hover, #voice-btn:hover {
+    border-color: var(--accent);
+    transform: scale(1.1);
     box-shadow: 0 0 15px var(--accent-glow);
 }
 
-.voice-off { 
-    color: #ff5555 !important; border-color: #ff5555 !important; 
-    background: rgba(255, 85, 85, 0.1) !important;
+/* Active State */
+#snapshot-btn:active, #coshop-btn:active, #stacking-btn:active, #daily-btn:active, #voice-btn:active { 
+    transform: scale(0.95); 
+    background: rgba(255,255,255,0.1); 
 }
 
-#snapshot-btn:active, #coshop-btn:active, #stacking-btn:active, #daily-btn:active, #voice-btn:active { 
-    transform: scale(0.9); background: rgba(255,255,255,0.3); 
+/* Specific Toggle States */
+#stacking-btn.active {
+    background: var(--accent); 
+    color: #000; /* Black icon on Gold background */
+    border-color: var(--accent);
+}
+
+.voice-off { 
+    color: #ff5555 !important; 
+    border-color: #ff5555 !important; 
+    background: rgba(50, 0, 0, 0.6) !important;
 }
 
 /* --- 5. BOTTOM CONTROLS --- */
@@ -244,16 +267,16 @@ body.hosting #webcam { opacity: 0; }
 .gallery-card:hover .gallery-overlay { opacity: 1; transform: translateY(0); }
 .overlay-text { font-size: 14px; color: #fff; font-weight: 600; text-transform: uppercase; }
 
-/* --- 8. UPDATED CLOSE BUTTONS (THE FIX) --- */
+/* --- 8. ROBUST CLOSE BUTTONS --- */
 .close-preview, .close-gallery, .close-lightbox { 
     position: absolute; 
     top: 20px; 
     right: 25px; 
-    font-size: 40px; /* Big & Bold */
+    font-size: 40px; 
     font-weight: bold;
     color: #fff; 
     cursor: pointer; 
-    z-index: 2147483647; /* Maximum possible Z-Index */
+    z-index: 2147483647; /* Max Z-Index */
     background: rgba(0, 0, 0, 0.6); 
     width: 60px; 
     height: 60px;
@@ -264,7 +287,7 @@ body.hosting #webcam { opacity: 0; }
     backdrop-filter: blur(4px);
     transition: all 0.2s ease;
     line-height: 1;
-    pointer-events: auto !important; /* Force clickability */
+    pointer-events: auto !important;
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
