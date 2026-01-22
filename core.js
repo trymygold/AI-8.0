@@ -1,4 +1,4 @@
-/* script.js - Jewels-Ai: Master Engine (v12.1) */
+/* script.js - Jewels-Ai: Master Engine (v12.3 - Robust Loading & Icons) */
 
 /* --- CONFIGURATION --- */
 const API_KEY = "AIzaSyAXG3iG2oQjUA_BpnO8dK8y-MHJ7HLrhyE"; 
@@ -175,7 +175,7 @@ const coShop = {
     setupDataListener: function() { this.conn.on('data', (data) => { if (data.type === 'VOTE') showReaction(data.val); }); },
     sendUpdate: function(category, index) { if (this.conn && this.conn.open) this.conn.send({ type: 'SYNC_ITEM', cat: category, idx: index }); },
     sendVote: function(val) { if (this.conn && this.conn.open) { this.conn.send({ type: 'VOTE', val: val }); showReaction(val); } },
-    activateUI: function() { this.active = true; document.getElementById('voting-ui').style.display = 'flex'; document.getElementById('coshop-btn').style.color = '#00ff00'; }
+    activateUI: function() { this.active = true; document.getElementById('coshop-btn').style.borderColor = '#00ff00'; }
 };
 
 /* --- 4. ASSET LOADING --- */
@@ -225,20 +225,28 @@ function setActiveARImage(img) {
     else if (type === 'bangles') window.JewelsState.active.bangles = img;
 }
 
-/* --- 5. APP INIT --- */
+/* --- 5. APP INIT (FIXED) --- */
 window.onload = async () => {
-    initBackgroundFetch();
-    coShop.init(); 
-    concierge.init();
-    
-    // Manual Close Binding
-    const closePrev = document.querySelector('.close-preview'); if(closePrev) closePrev.onclick = closePreview;
-    const closeGal = document.querySelector('.close-gallery'); if(closeGal) closeGal.onclick = closeGallery;
-    const closeLight = document.querySelector('.close-lightbox'); if(closeLight) closeLight.onclick = closeLightbox;
+    try {
+        initBackgroundFetch();
+        concierge.init(); 
+        coShop.init();
+        
+        // Manual Close Binding
+        const closePrev = document.querySelector('.close-preview'); if(closePrev) closePrev.onclick = closePreview;
+        const closeGal = document.querySelector('.close-gallery'); if(closeGal) closeGal.onclick = closeGallery;
+        const closeLight = document.querySelector('.close-lightbox'); if(closeLight) closeLight.onclick = closeLightbox;
 
-    await startCameraFast('user');
-    setTimeout(() => { loadingStatus.style.display = 'none'; }, 2000);
-    await selectJewelryType('earrings');
+        await startCameraFast('user');
+        
+        // FIX: Force loading screen off immediately after camera start
+        if(loadingStatus) loadingStatus.style.display = 'none';
+        
+        await selectJewelryType('earrings');
+    } catch (e) {
+        console.error("Init Error:", e);
+        if(loadingStatus) loadingStatus.innerText = "Check Console for Errors";
+    }
 };
 
 /* --- 6. LOGIC: SELECTION & STACKING --- */
@@ -301,17 +309,52 @@ function highlightButtonByIndex(index) {
     }
 }
 
-/* --- 7. VOICE CONTROL --- */
+/* --- 7. VOICE CONTROL (UPDATED ICONS) --- */
 function initVoiceControl() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) { if(voiceBtn) voiceBtn.style.display = 'none'; return; }
     recognition = new SpeechRecognition(); recognition.continuous = true; recognition.interimResults = false; recognition.lang = 'en-US';
-    recognition.onstart = () => { isRecognizing = true; if(voiceBtn) { voiceBtn.style.backgroundColor = "rgba(0, 255, 0, 0.2)"; voiceBtn.style.borderColor = "#00ff00"; } };
+    
+    // Updated Colors to Match Theme
+    recognition.onstart = () => { 
+        isRecognizing = true; 
+        if(voiceBtn) { 
+            voiceBtn.style.backgroundColor = "rgba(212, 175, 55, 0.2)"; 
+            voiceBtn.style.borderColor = "#d4af37"; 
+        } 
+    };
     recognition.onresult = (event) => { if (event.results[event.results.length - 1].isFinal) processVoiceCommand(event.results[event.results.length - 1][0].transcript.trim().toLowerCase()); };
-    recognition.onend = () => { isRecognizing = false; if (voiceEnabled) setTimeout(() => { try { recognition.start(); } catch(e) {} }, 500); else if(voiceBtn) { voiceBtn.style.backgroundColor = "rgba(255,255,255,0.1)"; voiceBtn.style.borderColor = "rgba(255,255,255,0.3)"; } };
+    recognition.onend = () => { 
+        isRecognizing = false; 
+        if (voiceEnabled) setTimeout(() => { try { recognition.start(); } catch(e) {} }, 500); 
+        else if(voiceBtn) { 
+            voiceBtn.style.backgroundColor = "rgba(0,0,0,0.7)"; 
+            voiceBtn.style.borderColor = "rgba(212, 175, 55, 0.4)"; 
+        } 
+    };
     try { recognition.start(); } catch(e) {}
 }
-function toggleVoiceControl() { if (!recognition) { initVoiceControl(); return; } voiceEnabled = !voiceEnabled; if (!voiceEnabled) { recognition.stop(); if(voiceBtn) { voiceBtn.innerHTML = '🔇'; voiceBtn.classList.add('voice-off'); } } else { try { recognition.start(); } catch(e) {} if(voiceBtn) { voiceBtn.innerHTML = '🎙️'; voiceBtn.classList.remove('voice-off'); } } }
+
+function toggleVoiceControl() { 
+    if (!recognition) { initVoiceControl(); return; } 
+    voiceEnabled = !voiceEnabled; 
+    
+    // FIX: Use Image instead of Emoji
+    if (!voiceEnabled) { 
+        recognition.stop(); 
+        if(voiceBtn) { 
+            voiceBtn.innerHTML = '<img src="VC.png" class="icon-img">'; 
+            voiceBtn.classList.add('voice-off'); 
+        } 
+    } else { 
+        try { recognition.start(); } catch(e) {} 
+        if(voiceBtn) { 
+            voiceBtn.innerHTML = '<img src="VC.png" class="icon-img">'; 
+            voiceBtn.classList.remove('voice-off'); 
+        } 
+    } 
+}
+
 function processVoiceCommand(cmd) { 
     cmd = cmd.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,""); 
     if (cmd.includes('next') || cmd.includes('change')) { changeProduct(1); triggerVisualFeedback("Next"); } 
