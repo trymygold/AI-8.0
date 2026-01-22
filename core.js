@@ -1,4 +1,4 @@
-/* core.js - Jewels-Ai: Master Engine (v11.5 - Gestures & Close Button Fix) */
+/* script.js - Jewels-Ai: Master Engine (v12.1) */
 
 /* --- CONFIGURATION --- */
 const API_KEY = "AIzaSyAXG3iG2oQjUA_BpnO8dK8y-MHJ7HLrhyE"; 
@@ -56,7 +56,7 @@ let recognition = null;
 let voiceEnabled = false;
 let isRecognizing = false;
 
-/* GESTURE VARIABLES */
+/* Gesture Variables */
 let lastGestureTime = 0;
 const GESTURE_COOLDOWN = 800; // ms between swipes
 let previousHandX = null;
@@ -69,7 +69,7 @@ let handSmoother = {
     bangle: { x: 0, y: 0, angle: 0, size: 0 }
 };
 
-/* --- 1. CORE NAVIGATION FUNCTIONS (Hoisted) --- */
+/* --- 1. CORE NAVIGATION FUNCTIONS --- */
 function changeProduct(direction) { 
     if (!JEWELRY_ASSETS[window.JewelsState.currentType]) return; 
     
@@ -208,7 +208,7 @@ function loadAsset(src, id) {
         if (IMAGE_CACHE[id]) { resolve(IMAGE_CACHE[id]); return; }
         
         const img = new Image(); 
-        img.crossOrigin = 'anonymous'; // ESSENTIAL: Allows taking screenshot of canvas
+        img.crossOrigin = 'anonymous'; 
         const safeSrc = src + (src.includes('?') ? '&' : '?') + 't=' + new Date().getTime(); 
         
         img.onload = () => { IMAGE_CACHE[id] = img; resolve(img); };
@@ -231,16 +231,10 @@ window.onload = async () => {
     coShop.init(); 
     concierge.init();
     
-    // --- FIX: MANUAL CLOSE BUTTON BINDING ---
-    const closePrev = document.querySelector('.close-preview');
-    if(closePrev) closePrev.onclick = closePreview;
-    
-    const closeGal = document.querySelector('.close-gallery');
-    if(closeGal) closeGal.onclick = closeGallery;
-    
-    const closeLight = document.querySelector('.close-lightbox');
-    if(closeLight) closeLight.onclick = closeLightbox;
-    // ----------------------------------------
+    // Manual Close Binding
+    const closePrev = document.querySelector('.close-preview'); if(closePrev) closePrev.onclick = closePreview;
+    const closeGal = document.querySelector('.close-gallery'); if(closeGal) closeGal.onclick = closeGallery;
+    const closeLight = document.querySelector('.close-lightbox'); if(closeLight) closeLight.onclick = closeLightbox;
 
     await startCameraFast('user');
     setTimeout(() => { loadingStatus.style.display = 'none'; }, 2000);
@@ -403,7 +397,7 @@ function calculateAngle(p1, p2) { return Math.atan2(p2.y - p1.y, p2.x - p1.x); }
 hands.onResults((results) => {
   const w = videoElement.videoWidth; const h = videoElement.videoHeight;
   
-  /* --- FIX: GESTURE DETECTION (MIRRORED LOGIC) --- */
+  /* --- GESTURE DETECTION --- */
   if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
       const lm = results.multiHandLandmarks[0];
       const indexTipX = lm[8].x; 
@@ -412,28 +406,19 @@ hands.onResults((results) => {
           if (previousHandX !== null) {
               const diff = indexTipX - previousHandX;
               if (Math.abs(diff) > 0.04) { 
-                  // In Mirrored view:
-                  // Physical LEFT Swipe = Hand moves RIGHT on screen (diff > 0) -> Previous (-1)
-                  // Physical RIGHT Swipe = Hand moves LEFT on screen (diff < 0) -> Next (1)
                   const dir = (diff > 0) ? -1 : 1; 
-                  
-                  changeProduct(dir); // Uses hoisted function
+                  changeProduct(dir); 
                   triggerVisualFeedback(dir === -1 ? "⬅️ Previous" : "Next ➡️");
-                  
                   lastGestureTime = Date.now(); 
                   previousHandX = null; 
               }
           }
           if (Date.now() - lastGestureTime > 100) previousHandX = indexTipX;
       }
-  } else { 
-      previousHandX = null; 
-  }
-  /* ------------------------------- */
+  } else { previousHandX = null; }
 
   const ringImg = window.JewelsState.active.rings;
   const bangleImg = window.JewelsState.active.bangles;
-  
   if (!ringImg && !bangleImg) return;
 
   canvasElement.width = w; canvasElement.height = h;
@@ -459,7 +444,6 @@ hands.onResults((results) => {
           handSmoother.ring.y = lerp(handSmoother.ring.y, mcp.y, SMOOTH_FACTOR);
           handSmoother.ring.angle = lerp(handSmoother.ring.angle, targetRingAngle, SMOOTH_FACTOR);
           handSmoother.ring.size = lerp(handSmoother.ring.size, targetRingWidth, SMOOTH_FACTOR);
-          
           handSmoother.bangle.x = lerp(handSmoother.bangle.x, wrist.x, SMOOTH_FACTOR);
           handSmoother.bangle.y = lerp(handSmoother.bangle.y, wrist.y, SMOOTH_FACTOR);
           handSmoother.bangle.angle = lerp(handSmoother.bangle.angle, targetArmAngle, SMOOTH_FACTOR);
@@ -580,8 +564,7 @@ async function runAutoStep() {
 /* --- 12. GALLERY & LIGHTBOX --- */
 function showGallery() {
     const grid = document.getElementById('gallery-grid');
-    grid.innerHTML = ''; // Clear previous
-    
+    grid.innerHTML = ''; 
     if (autoSnapshots.length === 0) {
         grid.innerHTML = '<p style="color:#888; text-align:center; width:100%;">No items captured.</p>';
     }
@@ -618,12 +601,7 @@ function changeLightboxImage(dir) {
     document.getElementById('lightbox-image').src = autoSnapshots[currentLightboxIndex].url;
 }
 
-/* --- CLOSE FUNCTIONS (Global) --- */
-function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
-function closeGallery() { document.getElementById('gallery-modal').style.display = 'none'; }
-function closeLightbox() { document.getElementById('lightbox-overlay').style.display = 'none'; }
-
-/* --- EXPORTS --- */
+/* --- UTILS --- */
 window.selectJewelryType = selectJewelryType; 
 window.toggleTryAll = toggleTryAll; 
 window.tryDailyItem = tryDailyItem; 
@@ -649,6 +627,9 @@ function toggleCoShop() { const m=document.getElementById('coshop-modal'); if (c
 function closeCoShopModal() { document.getElementById('coshop-modal').style.display='none'; }
 function copyInviteLink() { navigator.clipboard.writeText(document.getElementById('invite-link-box').innerText).then(()=>showToast("Link Copied!")); }
 function triggerFlash() { if(!flashOverlay) return; flashOverlay.classList.remove('flash-active'); void flashOverlay.offsetWidth; flashOverlay.classList.add('flash-active'); setTimeout(()=>flashOverlay.classList.remove('flash-active'),300); }
+function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
+function closeGallery() { document.getElementById('gallery-modal').style.display = 'none'; }
+function closeLightbox() { document.getElementById('lightbox-overlay').style.display = 'none'; }
 window.closePreview = closePreview;
 window.closeGallery = closeGallery;
 window.closeLightbox = closeLightbox;

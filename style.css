@@ -1,4 +1,4 @@
-/* style.css - Jewels-Ai: Unified Master Version (v12.0 - Gold Uniform Icons) */
+/* style.css - Jewels-Ai: Unified Master Version (v12.1) */
 
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap');
@@ -99,7 +99,7 @@ body.hosting #webcam { opacity: 0; }
     font-family: 'Playfair Display'; font-size: 18px; z-index: 500; backdrop-filter: blur(5px);
 }
 
-/* --- 4. TOP CONTROLS (UNIFORM GOLD ICONS) --- */
+/* --- 4. TOP CONTROLS (UNIFORM ICONS WITH FIX) --- */
 #controls-hero {
   position: fixed; top: 0; left: 0; right: 0; padding: 20px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
@@ -110,53 +110,55 @@ body.hosting #webcam { opacity: 0; }
 .brand-logo { height: 40px; }
 .action-row { display: flex; gap: 15px; align-items: center; }
 
-/* UNIFORM CIRCLE STYLES */
+/* Button Circle Container */
 #snapshot-btn, #coshop-btn, #stacking-btn, #daily-btn, #voice-btn {
-  background: rgba(0, 0, 0, 0.7); /* Dark background like bottom */
-  border: 1px solid rgba(212, 175, 55, 0.4); /* Subtle Gold Border */
-  padding: 0; 
-  border-radius: 50%; /* Perfect Circle */
+  background: rgba(0, 0, 0, 0.7); /* Dark background */
+  border: 1px solid rgba(212, 175, 55, 0.4); /* Gold Border */
+  padding: 8px; /* Padding to shrink icon inside */
+  border-radius: 50%; 
   cursor: pointer; 
-  
-  /* FORCE GOLD COLOR ON EMOJIS/ICONS */
-  color: transparent;  /* Hide default emoji color */
-  text-shadow: 0 0 0 #d4af37; /* Render shadow as the icon color (Gold) */
-  font-size: 22px; 
-  
-  transition: all 0.2s ease;
-  width: 48px;  
-  height: 48px; 
+  width: 44px;  /* Fixed size */
+  height: 44px; 
   display: flex; 
   align-items: center; 
   justify-content: center;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+  overflow: hidden; /* Prevents overflow */
 }
 
-/* Hover Effect */
+/* Image Icon Inside Button - THE FIX */
+.icon-img {
+    width: 100%;       
+    height: 100%;      
+    object-fit: contain; 
+    display: block;
+    pointer-events: none;
+}
+
+/* Hover Effects */
 #snapshot-btn:hover, #coshop-btn:hover, #stacking-btn:hover, #daily-btn:hover, #voice-btn:hover {
     border-color: var(--accent);
     transform: scale(1.1);
-    box-shadow: 0 0 15px var(--accent-glow);
-    text-shadow: 0 0 0 #fff; /* Turn white on hover */
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px var(--accent-glow);
 }
 
-/* Active Click Effect */
+/* Active State */
 #snapshot-btn:active, #coshop-btn:active, #stacking-btn:active, #daily-btn:active, #voice-btn:active { 
-    transform: scale(0.95); 
-    background: rgba(212, 175, 55, 0.2); 
+    transform: scale(0.9); 
 }
 
-/* Specific Toggle States */
+/* Toggle Active State */
 #stacking-btn.active {
     background: var(--accent); 
-    text-shadow: 0 0 0 #000; /* Black icon on Gold background */
     border-color: var(--accent);
-    box-shadow: 0 0 15px var(--accent-glow);
 }
+/* Optional: Invert icon color when active if needed */
+#stacking-btn.active .icon-img { filter: brightness(0); }
 
 .voice-off { 
-    text-shadow: 0 0 0 #ff5555 !important; /* Red icon when off */
     border-color: #ff5555 !important; 
     background: rgba(50, 0, 0, 0.6) !important;
 }
@@ -282,7 +284,7 @@ body.hosting #webcam { opacity: 0; }
     font-weight: bold;
     color: #fff; 
     cursor: pointer; 
-    z-index: 2147483647; /* Max Z-Index */
+    z-index: 2147483647; /* Max Possible Z-Index */
     background: rgba(0, 0, 0, 0.6); 
     width: 60px; 
     height: 60px;

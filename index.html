@@ -26,7 +26,9 @@
 
     <header id="controls-hero">
       <div class="brand-row">
-        <div class="brand-left"><img src="logo.png" alt="Jewels-ai Logo" class="brand-logo" /></div>
+        <div class="brand-left">
+          <img src="logo.png" alt="Jewels-ai Logo" class="brand-logo" />
+        </div>
         <div class="action-row">
           <button id="stacking-btn" onclick="toggleStacking()" title="Mix & Match">
             <img src="MM.png" alt="Mix Mode" class="icon-img">
@@ -74,7 +76,7 @@
         <div class="modal-box">
             <h2 style="color:#d4af37; font-family:'Playfair Display';">Save Your Vibe</h2>
             <p style="color:#ccc; font-size:14px;">Enter WhatsApp number to download images.</p>
-            <input type="tel" id="user-phone" placeholder="919999999999" class="input-dark" style="width:90%; padding:10px; margin:10px 0; background:#333; border:1px solid #555; color:white;">
+            <input type="tel" id="user-phone" placeholder="+91 99999 99999" class="input-dark" style="width:90%; padding:10px; margin:10px 0; background:#333; border:1px solid #555; color:white;">
             <button class="pill accent" onclick="confirmWhatsAppDownload()">Send & Download</button>
             <button onclick="document.getElementById('whatsapp-modal').style.display='none'" class="btn-text" style="background:none; border:none; color:#888; text-decoration:underline; margin-top:10px; cursor:pointer;">Cancel</button>
         </div>
@@ -120,16 +122,23 @@
         <div class="modal-box" style="background: linear-gradient(145deg, #1a1a1a, #000); border: 1px solid #d4af37;">
             <div style="text-align:right;"><span onclick="closeDailyDrop()" style="cursor:pointer; font-size:24px; color:#666;">&times;</span></div>
             <h3 style="color:#d4af37; font-family:'Playfair Display'; margin:0; font-size:22px;">✨ Daily Drop</h3>
-            <div style="background:#000; padding:10px; border-radius:10px; margin-bottom:15px;"><img id="daily-img" src="" style="width:100%; height:200px; object-fit:contain;"></div>
+            <p style="color:#888; font-size:12px; margin-bottom:15px; letter-spacing:1px;">CURATED JUST FOR YOU</p>
+            <div style="background:#000; padding:10px; border-radius:10px; margin-bottom:15px;"><img id="daily-img" src="" style="width:100%; height:200px; object-fit:contain; border-radius:5px;"></div>
             <h4 id="daily-name" style="color:white; margin:5px 0;">Golden Jhumka</h4>
             <button class="pill accent" style="width:100%; margin-top:10px;" onclick="tryDailyItem()">Try This Look</button>
         </div>
     </div>
 
+    <div id="process-overlay">
+        <div class="process-box">
+            <div class="spinner"></div>
+            <p id="process-text" style="color:white; margin-top:10px;">Processing...</p>
+        </div>
+    </div>
     <div id="toast-notification">Action Disabled</div>
   </div>
 
-  <script src="core.js"></script>
+  <script src="script.js"></script>
   <script>document.addEventListener('contextmenu', event => event.preventDefault());</script>
 </body>
 </html>
