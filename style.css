@@ -1,4 +1,4 @@
-/* style.css - Jewels-Ai: Unified Master Version (v12.2 - Final Fixed) */
+/* style.css - Jewels-Ai: Unified Master Version (v11.9 - Gold Header Icons) */
 
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap');
@@ -99,7 +99,7 @@ body.hosting #webcam { opacity: 0; }
     font-family: 'Playfair Display'; font-size: 18px; z-index: 500; backdrop-filter: blur(5px);
 }
 
-/* --- 4. TOP CONTROLS (UNIFORM ICONS WITH FIX) --- */
+/* --- 4. TOP CONTROLS (Updated Uniform Gold Icons) --- */
 #controls-hero {
   position: fixed; top: 0; left: 0; right: 0; padding: 20px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
@@ -110,55 +110,47 @@ body.hosting #webcam { opacity: 0; }
 .brand-logo { height: 40px; }
 .action-row { display: flex; gap: 15px; align-items: center; }
 
-/* Button Circle Container */
+/* UNIFORM CIRCLE STYLES FOR TOP ICONS */
 #snapshot-btn, #coshop-btn, #stacking-btn, #daily-btn, #voice-btn {
-  background: rgba(0, 0, 0, 0.7); /* Dark background */
-  border: 1px solid rgba(212, 175, 55, 0.4); /* Gold Border */
-  padding: 8px; /* Padding to shrink icon inside */
-  border-radius: 50%; 
+  background: rgba(0, 0, 0, 0.6); /* Dark background matching bottom */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+  padding: 0; 
+  border-radius: 50%; /* Perfect Circle */
   cursor: pointer; 
-  width: 44px;  /* Fixed size */
-  height: 44px; 
+  color: var(--accent); /* GOLD ICON COLOR */
+  font-size: 22px; 
+  transition: all 0.2s ease;
+  width: 48px;  /* Fixed Width */
+  height: 48px; /* Fixed Height */
   display: flex; 
   align-items: center; 
   justify-content: center;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(4px);
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  transition: all 0.2s ease;
-  overflow: hidden; /* Prevents overflow */
 }
 
-/* Image Icon Inside Button - THE FIX */
-.icon-img {
-    width: 100%;       
-    height: 100%;      
-    object-fit: contain; 
-    display: block;
-    pointer-events: none;
-}
-
-/* Hover Effects */
+/* Hover Effect */
 #snapshot-btn:hover, #coshop-btn:hover, #stacking-btn:hover, #daily-btn:hover, #voice-btn:hover {
     border-color: var(--accent);
     transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 10px var(--accent-glow);
+    box-shadow: 0 0 15px var(--accent-glow);
 }
 
 /* Active State */
 #snapshot-btn:active, #coshop-btn:active, #stacking-btn:active, #daily-btn:active, #voice-btn:active { 
-    transform: scale(0.9); 
+    transform: scale(0.95); 
+    background: rgba(255,255,255,0.1); 
 }
 
-/* Toggle Active State */
+/* Specific Toggle States */
 #stacking-btn.active {
     background: var(--accent); 
+    color: #000; /* Black icon on Gold background */
     border-color: var(--accent);
 }
-/* Optional: Invert icon color when active if needed */
-#stacking-btn.active .icon-img { filter: brightness(0); }
 
 .voice-off { 
+    color: #ff5555 !important; 
     border-color: #ff5555 !important; 
     background: rgba(50, 0, 0, 0.6) !important;
 }
@@ -284,7 +276,7 @@ body.hosting #webcam { opacity: 0; }
     font-weight: bold;
     color: #fff; 
     cursor: pointer; 
-    z-index: 2147483647; /* Max Possible Z-Index */
+    z-index: 2147483647; /* Max Z-Index */
     background: rgba(0, 0, 0, 0.6); 
     width: 60px; 
     height: 60px;

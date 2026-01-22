@@ -1,4 +1,4 @@
-/* script.js - Jewels-Ai: Master Engine (v12.3 - Robust Loading & Icons) */
+/* core.js - Jewels-Ai: Master Engine (v11.5 - Gestures & Close Button Fix) */
 
 /* --- CONFIGURATION --- */
 const API_KEY = "AIzaSyAXG3iG2oQjUA_BpnO8dK8y-MHJ7HLrhyE"; 
@@ -56,7 +56,7 @@ let recognition = null;
 let voiceEnabled = false;
 let isRecognizing = false;
 
-/* Gesture Variables */
+/* GESTURE VARIABLES */
 let lastGestureTime = 0;
 const GESTURE_COOLDOWN = 800; // ms between swipes
 let previousHandX = null;
@@ -69,7 +69,7 @@ let handSmoother = {
     bangle: { x: 0, y: 0, angle: 0, size: 0 }
 };
 
-/* --- 1. CORE NAVIGATION FUNCTIONS --- */
+/* --- 1. CORE NAVIGATION FUNCTIONS (Hoisted) --- */
 function changeProduct(direction) { 
     if (!JEWELRY_ASSETS[window.JewelsState.currentType]) return; 
     
@@ -175,7 +175,7 @@ const coShop = {
     setupDataListener: function() { this.conn.on('data', (data) => { if (data.type === 'VOTE') showReaction(data.val); }); },
     sendUpdate: function(category, index) { if (this.conn && this.conn.open) this.conn.send({ type: 'SYNC_ITEM', cat: category, idx: index }); },
     sendVote: function(val) { if (this.conn && this.conn.open) { this.conn.send({ type: 'VOTE', val: val }); showReaction(val); } },
-    activateUI: function() { this.active = true; document.getElementById('coshop-btn').style.borderColor = '#00ff00'; }
+    activateUI: function() { this.active = true; document.getElementById('voting-ui').style.display = 'flex'; document.getElementById('coshop-btn').style.color = '#00ff00'; }
 };
 
 /* --- 4. ASSET LOADING --- */
@@ -208,7 +208,7 @@ function loadAsset(src, id) {
         if (IMAGE_CACHE[id]) { resolve(IMAGE_CACHE[id]); return; }
         
         const img = new Image(); 
-        img.crossOrigin = 'anonymous'; 
+        img.crossOrigin = 'anonymous'; // ESSENTIAL: Allows taking screenshot of canvas
         const safeSrc = src + (src.includes('?') ? '&' : '?') + 't=' + new Date().getTime(); 
         
         img.onload = () => { IMAGE_CACHE[id] = img; resolve(img); };
@@ -225,28 +225,26 @@ function setActiveARImage(img) {
     else if (type === 'bangles') window.JewelsState.active.bangles = img;
 }
 
-/* --- 5. APP INIT (FIXED) --- */
+/* --- 5. APP INIT --- */
 window.onload = async () => {
-    try {
-        initBackgroundFetch();
-        concierge.init(); 
-        coShop.init();
-        
-        // Manual Close Binding
-        const closePrev = document.querySelector('.close-preview'); if(closePrev) closePrev.onclick = closePreview;
-        const closeGal = document.querySelector('.close-gallery'); if(closeGal) closeGal.onclick = closeGallery;
-        const closeLight = document.querySelector('.close-lightbox'); if(closeLight) closeLight.onclick = closeLightbox;
+    initBackgroundFetch();
+    coShop.init(); 
+    concierge.init();
+    
+    // --- FIX: MANUAL CLOSE BUTTON BINDING ---
+    const closePrev = document.querySelector('.close-preview');
+    if(closePrev) closePrev.onclick = closePreview;
+    
+    const closeGal = document.querySelector('.close-gallery');
+    if(closeGal) closeGal.onclick = closeGallery;
+    
+    const closeLight = document.querySelector('.close-lightbox');
+    if(closeLight) closeLight.onclick = closeLightbox;
+    // ----------------------------------------
 
-        await startCameraFast('user');
-        
-        // FIX: Force loading screen off immediately after camera start
-        if(loadingStatus) loadingStatus.style.display = 'none';
-        
-        await selectJewelryType('earrings');
-    } catch (e) {
-        console.error("Init Error:", e);
-        if(loadingStatus) loadingStatus.innerText = "Check Console for Errors";
-    }
+    await startCameraFast('user');
+    setTimeout(() => { loadingStatus.style.display = 'none'; }, 2000);
+    await selectJewelryType('earrings');
 };
 
 /* --- 6. LOGIC: SELECTION & STACKING --- */
@@ -309,52 +307,17 @@ function highlightButtonByIndex(index) {
     }
 }
 
-/* --- 7. VOICE CONTROL (UPDATED ICONS) --- */
+/* --- 7. VOICE CONTROL --- */
 function initVoiceControl() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) { if(voiceBtn) voiceBtn.style.display = 'none'; return; }
     recognition = new SpeechRecognition(); recognition.continuous = true; recognition.interimResults = false; recognition.lang = 'en-US';
-    
-    // Updated Colors to Match Theme
-    recognition.onstart = () => { 
-        isRecognizing = true; 
-        if(voiceBtn) { 
-            voiceBtn.style.backgroundColor = "rgba(212, 175, 55, 0.2)"; 
-            voiceBtn.style.borderColor = "#d4af37"; 
-        } 
-    };
+    recognition.onstart = () => { isRecognizing = true; if(voiceBtn) { voiceBtn.style.backgroundColor = "rgba(0, 255, 0, 0.2)"; voiceBtn.style.borderColor = "#00ff00"; } };
     recognition.onresult = (event) => { if (event.results[event.results.length - 1].isFinal) processVoiceCommand(event.results[event.results.length - 1][0].transcript.trim().toLowerCase()); };
-    recognition.onend = () => { 
-        isRecognizing = false; 
-        if (voiceEnabled) setTimeout(() => { try { recognition.start(); } catch(e) {} }, 500); 
-        else if(voiceBtn) { 
-            voiceBtn.style.backgroundColor = "rgba(0,0,0,0.7)"; 
-            voiceBtn.style.borderColor = "rgba(212, 175, 55, 0.4)"; 
-        } 
-    };
+    recognition.onend = () => { isRecognizing = false; if (voiceEnabled) setTimeout(() => { try { recognition.start(); } catch(e) {} }, 500); else if(voiceBtn) { voiceBtn.style.backgroundColor = "rgba(255,255,255,0.1)"; voiceBtn.style.borderColor = "rgba(255,255,255,0.3)"; } };
     try { recognition.start(); } catch(e) {}
 }
-
-function toggleVoiceControl() { 
-    if (!recognition) { initVoiceControl(); return; } 
-    voiceEnabled = !voiceEnabled; 
-    
-    // FIX: Use Image instead of Emoji
-    if (!voiceEnabled) { 
-        recognition.stop(); 
-        if(voiceBtn) { 
-            voiceBtn.innerHTML = '<img src="VC.png" class="icon-img">'; 
-            voiceBtn.classList.add('voice-off'); 
-        } 
-    } else { 
-        try { recognition.start(); } catch(e) {} 
-        if(voiceBtn) { 
-            voiceBtn.innerHTML = '<img src="VC.png" class="icon-img">'; 
-            voiceBtn.classList.remove('voice-off'); 
-        } 
-    } 
-}
-
+function toggleVoiceControl() { if (!recognition) { initVoiceControl(); return; } voiceEnabled = !voiceEnabled; if (!voiceEnabled) { recognition.stop(); if(voiceBtn) { voiceBtn.innerHTML = '🔇'; voiceBtn.classList.add('voice-off'); } } else { try { recognition.start(); } catch(e) {} if(voiceBtn) { voiceBtn.innerHTML = '🎙️'; voiceBtn.classList.remove('voice-off'); } } }
 function processVoiceCommand(cmd) { 
     cmd = cmd.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,""); 
     if (cmd.includes('next') || cmd.includes('change')) { changeProduct(1); triggerVisualFeedback("Next"); } 
@@ -440,7 +403,7 @@ function calculateAngle(p1, p2) { return Math.atan2(p2.y - p1.y, p2.x - p1.x); }
 hands.onResults((results) => {
   const w = videoElement.videoWidth; const h = videoElement.videoHeight;
   
-  /* --- GESTURE DETECTION --- */
+  /* --- FIX: GESTURE DETECTION (MIRRORED LOGIC) --- */
   if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
       const lm = results.multiHandLandmarks[0];
       const indexTipX = lm[8].x; 
@@ -449,19 +412,28 @@ hands.onResults((results) => {
           if (previousHandX !== null) {
               const diff = indexTipX - previousHandX;
               if (Math.abs(diff) > 0.04) { 
+                  // In Mirrored view:
+                  // Physical LEFT Swipe = Hand moves RIGHT on screen (diff > 0) -> Previous (-1)
+                  // Physical RIGHT Swipe = Hand moves LEFT on screen (diff < 0) -> Next (1)
                   const dir = (diff > 0) ? -1 : 1; 
-                  changeProduct(dir); 
+                  
+                  changeProduct(dir); // Uses hoisted function
                   triggerVisualFeedback(dir === -1 ? "⬅️ Previous" : "Next ➡️");
+                  
                   lastGestureTime = Date.now(); 
                   previousHandX = null; 
               }
           }
           if (Date.now() - lastGestureTime > 100) previousHandX = indexTipX;
       }
-  } else { previousHandX = null; }
+  } else { 
+      previousHandX = null; 
+  }
+  /* ------------------------------- */
 
   const ringImg = window.JewelsState.active.rings;
   const bangleImg = window.JewelsState.active.bangles;
+  
   if (!ringImg && !bangleImg) return;
 
   canvasElement.width = w; canvasElement.height = h;
@@ -487,6 +459,7 @@ hands.onResults((results) => {
           handSmoother.ring.y = lerp(handSmoother.ring.y, mcp.y, SMOOTH_FACTOR);
           handSmoother.ring.angle = lerp(handSmoother.ring.angle, targetRingAngle, SMOOTH_FACTOR);
           handSmoother.ring.size = lerp(handSmoother.ring.size, targetRingWidth, SMOOTH_FACTOR);
+          
           handSmoother.bangle.x = lerp(handSmoother.bangle.x, wrist.x, SMOOTH_FACTOR);
           handSmoother.bangle.y = lerp(handSmoother.bangle.y, wrist.y, SMOOTH_FACTOR);
           handSmoother.bangle.angle = lerp(handSmoother.bangle.angle, targetArmAngle, SMOOTH_FACTOR);
@@ -607,7 +580,8 @@ async function runAutoStep() {
 /* --- 12. GALLERY & LIGHTBOX --- */
 function showGallery() {
     const grid = document.getElementById('gallery-grid');
-    grid.innerHTML = ''; 
+    grid.innerHTML = ''; // Clear previous
+    
     if (autoSnapshots.length === 0) {
         grid.innerHTML = '<p style="color:#888; text-align:center; width:100%;">No items captured.</p>';
     }
@@ -644,7 +618,12 @@ function changeLightboxImage(dir) {
     document.getElementById('lightbox-image').src = autoSnapshots[currentLightboxIndex].url;
 }
 
-/* --- UTILS --- */
+/* --- CLOSE FUNCTIONS (Global) --- */
+function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
+function closeGallery() { document.getElementById('gallery-modal').style.display = 'none'; }
+function closeLightbox() { document.getElementById('lightbox-overlay').style.display = 'none'; }
+
+/* --- EXPORTS --- */
 window.selectJewelryType = selectJewelryType; 
 window.toggleTryAll = toggleTryAll; 
 window.tryDailyItem = tryDailyItem; 
@@ -670,9 +649,6 @@ function toggleCoShop() { const m=document.getElementById('coshop-modal'); if (c
 function closeCoShopModal() { document.getElementById('coshop-modal').style.display='none'; }
 function copyInviteLink() { navigator.clipboard.writeText(document.getElementById('invite-link-box').innerText).then(()=>showToast("Link Copied!")); }
 function triggerFlash() { if(!flashOverlay) return; flashOverlay.classList.remove('flash-active'); void flashOverlay.offsetWidth; flashOverlay.classList.add('flash-active'); setTimeout(()=>flashOverlay.classList.remove('flash-active'),300); }
-function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
-function closeGallery() { document.getElementById('gallery-modal').style.display = 'none'; }
-function closeLightbox() { document.getElementById('lightbox-overlay').style.display = 'none'; }
 window.closePreview = closePreview;
 window.closeGallery = closeGallery;
 window.closeLightbox = closeLightbox;
